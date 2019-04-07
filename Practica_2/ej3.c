@@ -71,6 +71,8 @@ int main(int argc, char* argv[]){
   float res;
   for(int i = 0; i < NUM_THREADS; i++) res+= result[i];
   res = res/N;
+  
+  float time = dwalltime() - timetick;
 
   //Chequeo de verbose
   if ((argc == 4) && atoi(argv[3]) == 1) {
@@ -83,7 +85,6 @@ int main(int argc, char* argv[]){
     printf("Time: ");
   }
 
-  float time = dwalltime() - timetick;
   printf("%f\n", time);
 
 }
