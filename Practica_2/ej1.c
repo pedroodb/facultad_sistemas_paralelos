@@ -40,12 +40,12 @@ int main(int argc,char*argv[]){
   double timetick;
 
   //Controla los argumentos al programa
-  if ((argc != 3) || ((N = atoi(argv[1])) <= 0) )
+  if ((argc != 3) || ((N = atoi(argv[2])) <= 0) )
   {
     printf("Error en cantidad de parametros");
     exit(1);
   }
-  NUM_THREADS = atoi(argv[2]);
+  NUM_THREADS = atoi(argv[1]);
   int ids[NUM_THREADS];
   block_size = N/NUM_THREADS;
   int i, j;

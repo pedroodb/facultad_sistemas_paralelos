@@ -1,7 +1,7 @@
 #!/bin/bash
 
-TIME_SEQ="$(./$1 $2 1)"
-TIME_PAR="$(./$1 $2 4)"
+TIME_SEQ="$(./$1 1 $2)"
+TIME_PAR="$(./$1 4 $2)"
 SPEED_UP=$(echo "scale=6; $TIME_SEQ / $TIME_PAR" | bc)
 EFFICIENCY=$(echo "scale=6; $SPEED_UP / 4" | bc)
 
