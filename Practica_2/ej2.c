@@ -30,7 +30,7 @@ void* buscar(void* id){
 int main(int argc, char* argv[]){
 
   //Controla los argumentos al programa
-  if ((argc != 3) || ((N = atoi(argv[2])) <= 0) )
+  if ((argc < 3) || ((N = atoi(argv[2])) <= 0) )
   {
     printf("Error en cantidad de parametros");
     exit(1);
@@ -74,6 +74,17 @@ int main(int argc, char* argv[]){
   for(int i = 0; i < NUM_THREADS; i++) res+= result[i];
 
   float time = dwalltime() - timetick;
+
+  //Chequeo de verbose
+  if ((argc == 4) && atoi(argv[3]) == 1) {
+    for(int i = 0; i < N; i++){
+      printf("%d, ",vector[i]);
+    }
+    printf("\n");
+    printf("El %d aparece %d veces\n", NUM, res);
+    printf("Time: ");
+  }
+
   printf("%f\n", time);
 
 }

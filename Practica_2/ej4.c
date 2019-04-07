@@ -15,14 +15,17 @@ double dwalltime(){
 
 int N, NUM_THREADS;
 int* vector;
-int* result;
+int* min;
+int* max;
 int block_size;
 
-void* sum(void* id){
+void* getMaxMin(void* id){
   int block = *((int*)id);
-  result[block] = 0;
+  max[block] = -1;
+  min[block] = 10;
   for(int i = (block*block_size); i < ((1+block)*block_size); i++){
-    result[block]+=vector[i];
+    if(vector[i] < min[block]) min[block] = vector[i];
+    if(vector[i] > max[block]) max[block] = vector[i];
   }
   pthread_exit(0);
 }
@@ -42,11 +45,12 @@ int main(int argc, char* argv[]){
   block_size = N/NUM_THREADS;
   
   int ids[NUM_THREADS];  
-  result = (int*)malloc(sizeof(int)*NUM_THREADS);
+  min = (int*)malloc(sizeof(int)*NUM_THREADS);
+  max = (int*)malloc(sizeof(int)*NUM_THREADS);
   vector = (int*)malloc(sizeof(int)*N);
 
   for(int i = 0; i < N; i++){
-    vector[i] = rand() % 5;
+    vector[i] = rand() % 10;
   }
 
   pthread_attr_t attr;
@@ -59,7 +63,7 @@ int main(int argc, char* argv[]){
 
   for(int i = 0; i < NUM_THREADS; i++){
     ids[i] = i;
-    pthread_create(&threads[i], &attr, sum, &ids[i]);
+    pthread_create(&threads[i], &attr, getMaxMin, &ids[i]);
   }
   for(int i = 0; i < NUM_THREADS; i++){
     pthread_join(threads[i], NULL);
@@ -67,10 +71,13 @@ int main(int argc, char* argv[]){
 
   //Calcula el resultado final sumando lo que calcularon los threads y dividiendo por N
 
-  float res;
-  for(int i = 0; i < NUM_THREADS; i++) res+= result[i];
-  res = res/N;
-
+  int maximum = -1;
+  int mininum = 10;
+  for(int i = 0; i < NUM_THREADS; i++) {
+    if(max[i]>maximum) maximum = max[i];
+    if(min[i]<mininum) mininum = min[i];
+  }
+  
   float time = dwalltime() - timetick;
 
   //Chequeo de verbose
@@ -79,7 +86,8 @@ int main(int argc, char* argv[]){
       printf("%d, ",vector[i]);
     }
     printf("\n");
-    printf("Avg: %f\n", res);
+    printf("Max: %d\n", maximum);
+    printf("Min: %d\n", mininum);
     printf("Time: ");
   }
 
