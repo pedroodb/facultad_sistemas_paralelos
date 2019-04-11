@@ -21,9 +21,11 @@ int block_size;
 
 void* getMaxMin(void* id){
   int block = *((int*)id);
-  max[block] = -1;
-  min[block] = 10;
-  for(int i = (block*block_size); i < ((1+block)*block_size); i++){
+  int begin = (block*block_size);
+  int end = ((1+block)*block_size);
+  max[block] = vector[begin];
+  min[block] = vector[end];
+  for(int i = begin; i < end; i++){
     if(vector[i] < min[block]) min[block] = vector[i];
     if(vector[i] > max[block]) max[block] = vector[i];
   }
@@ -50,12 +52,10 @@ int main(int argc, char* argv[]){
   vector = (int*)malloc(sizeof(int)*N);
 
   for(int i = 0; i < N; i++){
-    vector[i] = rand() % 10;
+    vector[i] = rand();
   }
 
-  pthread_attr_t attr;
   pthread_t threads[NUM_THREADS];
-  pthread_attr_init(&attr);
   
   timetick = dwalltime();
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]){
 
   for(int i = 0; i < NUM_THREADS; i++){
     ids[i] = i;
-    pthread_create(&threads[i], &attr, getMaxMin, &ids[i]);
+    pthread_create(&threads[i], NULL, getMaxMin, &ids[i]);
   }
   for(int i = 0; i < NUM_THREADS; i++){
     pthread_join(threads[i], NULL);
@@ -90,6 +90,10 @@ int main(int argc, char* argv[]){
     printf("Min: %d\n", mininum);
     printf("Time: ");
   }
+
+  free(vector);
+  free(min);
+  free(max);
 
   printf("%f\n", time);
 

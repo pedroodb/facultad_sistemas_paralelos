@@ -21,7 +21,9 @@ int block_size;
 void* buscar(void* id){
   int block = *((int*)id);
   result[block] = 0;
-  for(int i = (block*block_size); i < ((1+block)*block_size); i++){
+  int begin = (block*block_size);
+  int end = ((1+block)*block_size);
+  for(int i = begin; i < end; i++){
     if(vector[i] == NUM) result[block]++;
   }
   pthread_exit(0);
@@ -41,7 +43,7 @@ int main(int argc, char* argv[]){
   double timetick;
   NUM_THREADS = atoi(argv[1]);
   N = atoi(argv[2]);
-  NUM = rand() % 5;
+  NUM = rand();
   block_size = N/NUM_THREADS;
   
   int ids[NUM_THREADS];  
@@ -49,12 +51,10 @@ int main(int argc, char* argv[]){
   vector = (int*)malloc(sizeof(int)*N);
 
   for(int i = 0; i < N; i++){
-    vector[i] = rand() % 5;
+    vector[i] = rand();
   }
 
-  pthread_attr_t attr;
   pthread_t threads[NUM_THREADS];
-  pthread_attr_init(&attr);
   
   timetick = dwalltime();
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]){
 
   for(int i = 0; i < NUM_THREADS; i++){
     ids[i] = i;
-    pthread_create(&threads[i], &attr, buscar, &ids[i]);
+    pthread_create(&threads[i], NULL, buscar, &ids[i]);
   }
   for(int i = 0; i < NUM_THREADS; i++){
     pthread_join(threads[i], NULL);
@@ -84,6 +84,9 @@ int main(int argc, char* argv[]){
     printf("El %d aparece %d veces\n", NUM, res);
     printf("Time: ");
   }
+
+  free(vector);
+  free(result);
 
   printf("%f\n", time);
 

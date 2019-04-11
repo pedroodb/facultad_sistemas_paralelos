@@ -21,7 +21,9 @@ int block_size;
 void* sum(void* id){
   int block = *((int*)id);
   result[block] = 0;
-  for(int i = (block*block_size); i < ((1+block)*block_size); i++){
+  int begin = (block*block_size);
+  int end = ((1+block)*block_size);
+  for(int i = begin; i < end; i++){
     result[block]+=vector[i];
   }
   pthread_exit(0);
@@ -46,12 +48,10 @@ int main(int argc, char* argv[]){
   vector = (int*)malloc(sizeof(int)*N);
 
   for(int i = 0; i < N; i++){
-    vector[i] = rand() % 5;
+    vector[i] = rand();
   }
 
-  pthread_attr_t attr;
   pthread_t threads[NUM_THREADS];
-  pthread_attr_init(&attr);
   
   timetick = dwalltime();
 
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
 
   for(int i = 0; i < NUM_THREADS; i++){
     ids[i] = i;
-    pthread_create(&threads[i], &attr, sum, &ids[i]);
+    pthread_create(&threads[i], NULL, sum, &ids[i]);
   }
   for(int i = 0; i < NUM_THREADS; i++){
     pthread_join(threads[i], NULL);
@@ -82,6 +82,9 @@ int main(int argc, char* argv[]){
     printf("Avg: %f\n", res);
     printf("Time: ");
   }
+
+  free(vector);
+  free(result);
 
   printf("%f\n", time);
 
