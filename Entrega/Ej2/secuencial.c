@@ -27,11 +27,11 @@ int main(int argc,char*argv[]){
     matrices[i]=1;
   }
 
+  int res=0;
+
   timetick = dwalltime();
 
  //Realiza la multiplicacion
-
-  int res=0;
 
   for(i=0;i<M;i++){
     int max=-1;
