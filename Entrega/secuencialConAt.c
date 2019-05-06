@@ -78,6 +78,7 @@ int main(int argc,char*argv[]){
  free(B);
  free(C);
  free(D);
+ free(AT);
  free(tot);
  return(0);
 }

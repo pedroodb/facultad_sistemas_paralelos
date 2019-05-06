@@ -7,7 +7,7 @@ double dwalltime();
 
 
 int main(int argc,char*argv[]){
- double *A,*B,*C ,*D,*tot;
+ double *A,*B,*C,*D,*AT,*tot;
  int i,j,k,N,sum,pos1,pos2;
  int check=1;
  double timetick;
@@ -25,6 +25,7 @@ int main(int argc,char*argv[]){
   B=(double*)malloc(sizeof(double)*N*N);
   C=(double*)malloc(sizeof(double)*N*N);
   D=(double*)malloc(sizeof(double)*N*N);
+  AT=(double*)malloc(sizeof(double)*N*N);
   tot=(double*)malloc(sizeof(double)*N*N);
 
  //Inicializa las matrices A y B en 1, el resultado sera una matriz con todos sus valores en N
@@ -38,15 +39,24 @@ int main(int argc,char*argv[]){
   }
 
   timetick = dwalltime();
- //Realiza la multiplicacion
+
+  //Transpone la matriz A
+  #pragma omp parallel for private(k)
+  for(j=0;j<N;j++){
+   for(k=0;k<N;k++){
+    AT[j*N+k]=A[k*N+j];
+   }
+  }
+
+  //Realiza la multiplicacion
   #pragma omp parallel for private(j,k,sum,pos1,pos2)
   for(i=0;i<N;i++){
    for(j=0;j<N;j++){
-    sum=0;
+    int sum=0;
     for(k=0;k<N;k++){
-	   pos1 = i*N+k;
-	   pos2 = j*N+k;
-	   sum = sum + A[pos1]*A[pos2] + A[pos1]*B[pos2] + C[pos1]*D[pos2];
+    	int pos1 = i*N+k;
+    	int pos2 = j*N+k;
+    	sum = sum + A[pos1]*AT[pos2] + A[pos1]*B[pos2] + C[pos1]*D[pos2];
     }
     tot[i*N+j]=sum;
    }
@@ -71,11 +81,10 @@ int main(int argc,char*argv[]){
  free(B);
  free(C);
  free(D);
+ free(AT);
  free(tot);
  return(0);
 }
-
-
 
 /*****************************************************************/
 
@@ -90,6 +99,3 @@ double dwalltime()
 	sec = tv.tv_sec + tv.tv_usec/1000000.0;
 	return sec;
 }
-
-
-
