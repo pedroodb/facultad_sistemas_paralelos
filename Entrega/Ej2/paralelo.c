@@ -35,7 +35,7 @@ void* calcularMatrices(void* id) {
             min=val;
         }
     }
-    res[i]+=(max-min)/(sum/(N*N));
+    res[thread]+=(max-min)/(sum/(N*N));
   }  
 }
 
@@ -52,7 +52,7 @@ int main(int argc,char*argv[]){
 
   //Aloca memoria para las matrices
   matrices=(double*)malloc(sizeof(double)*N*N*M);
-  res=(double*)malloc(sizeof(double)*M);
+  res=(double*)malloc(sizeof(double)*NUM_THREADS);
 
   //Inicializa las matrices en 1, se supone que B y D estaran ordenadas por columnas
   for(i=0;i<N*N*M;i++){
@@ -79,15 +79,22 @@ int main(int argc,char*argv[]){
     pthread_join(threads[i], NULL);
   }
 
+  int resultado=0;
+  for(int i = 0; i < NUM_THREADS; i++){
+    resultado+=res[i];
+  }
+  
+
   printf("Tiempo en segundos %f \n", dwalltime() - timetick);
 
-  if(res==0){
+  if(resultado==0){
    printf("Multiplicacion de matrices resultado correcto\n");
   }else{
    printf("Multiplicacion de matrices resultado erroneo\n");
   }
 
  free(matrices);
+ free(res);
  return(0);
 }
 
