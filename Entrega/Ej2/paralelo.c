@@ -14,7 +14,7 @@ double dwalltime(){
 }
 
 double *matrices,*res;
-int i,j,N,M,NUM_THREADS;
+int N,M,NUM_THREADS;
 double timetick;
 
 void* calcularMatrices(void* id) {
@@ -26,8 +26,8 @@ void* calcularMatrices(void* id) {
     int max=-1;
     int min=__INT_MAX__;
     int sum=0;
-    for(j=0;j<N*N;j++){
-        int val=matrices[i*N*N+j];
+    for(int j=begin;j<end;j++){
+        int val=matrices[j];
         sum+=val;
         if(val>max){
             max=val;
@@ -42,24 +42,25 @@ void* calcularMatrices(void* id) {
 int main(int argc,char*argv[]){
 
  //Controla los argumentos al programa
-  if (argc <= 2){
+  if (argc <= 3){
    printf("\n Faltan argumentos\n");
    return 0;
   }
  
   N=atoi(argv[1]);
   M=atoi(argv[2]);
+  NUM_THREADS=atoi(argv[3]);
 
-  //Aloca memoria para las matrices
+  //Aloca memoria para las matrices (almacena todas las matrices en un solo arreglo)
   matrices=(double*)malloc(sizeof(double)*N*N*M);
   res=(double*)malloc(sizeof(double)*NUM_THREADS);
 
-  //Inicializa las matrices en 1, se supone que B y D estaran ordenadas por columnas
-  for(i=0;i<N*N*M;i++){
+  //Inicializa las matrices en 1
+  for(int i=0;i<N*N*M;i++){
     matrices[i]=1;
   }
 
-  for(i=0;i<M;i++){
+  for(int i=0;i<NUM_THREADS;i++){
     res[i]=0;  
   }
 
@@ -79,7 +80,7 @@ int main(int argc,char*argv[]){
     pthread_join(threads[i], NULL);
   }
 
-  int resultado=0;
+  double resultado=0;
   for(int i = 0; i < NUM_THREADS; i++){
     resultado+=res[i];
   }

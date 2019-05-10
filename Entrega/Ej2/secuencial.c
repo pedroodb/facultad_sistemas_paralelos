@@ -27,7 +27,7 @@ int main(int argc,char*argv[]){
     matrices[i]=1;
   }
 
-  int res=0;
+  double res=0;
 
   timetick = dwalltime();
 
