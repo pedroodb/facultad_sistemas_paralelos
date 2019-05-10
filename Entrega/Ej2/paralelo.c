@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-// Para calcular el tiempo
+// Funcion para calcular el tiempo
 double dwalltime(){
 	double sec;
 	struct timeval tv;
@@ -17,6 +17,7 @@ double *matrices,*res;
 int N,M,NUM_THREADS;
 double timetick;
 
+//Funcion ejecutada por cada matriz para calcular el resultado de las matrices que le correspondan
 void* calcularMatrices(void* id) {
   int thread = *((int*)id);
   int cantMatrices = M/NUM_THREADS;
@@ -30,9 +31,9 @@ void* calcularMatrices(void* id) {
         int val=matrices[j];
         sum+=val;
         if(val>max){
-            max=val;
+          max=val;
         } else if (val<min) {
-            min=val;
+          min=val;
         }
     }
     res[thread]+=(max-min)/(sum/(N*N));
@@ -55,7 +56,7 @@ int main(int argc,char*argv[]){
   matrices=(double*)malloc(sizeof(double)*N*N*M);
   res=(double*)malloc(sizeof(double)*NUM_THREADS);
 
-  //Inicializa las matrices en 1
+  //Inicializa las matrices en 1, el resultado deberia ser 0
   for(int i=0;i<N*N*M;i++){
     matrices[i]=1;
   }
@@ -71,7 +72,6 @@ int main(int argc,char*argv[]){
   timetick = dwalltime();
 
   //Lanza los threads para que realicen el calculo
-
   for(int i = 0; i < NUM_THREADS; i++){
     ids[i] = i;
     pthread_create(&threads[i], NULL, calcularMatrices, &ids[i]);
@@ -80,6 +80,7 @@ int main(int argc,char*argv[]){
     pthread_join(threads[i], NULL);
   }
 
+  //Acumula el resultado de la ejecucion de los threads
   double resultado=0;
   for(int i = 0; i < NUM_THREADS; i++){
     resultado+=res[i];
@@ -89,19 +90,12 @@ int main(int argc,char*argv[]){
   printf("Tiempo en segundos %f \n", dwalltime() - timetick);
 
   if(resultado==0){
-   printf("Multiplicacion de matrices resultado correcto\n");
+    printf("Multiplicacion de matrices resultado correcto\n");
   }else{
-   printf("Multiplicacion de matrices resultado erroneo\n");
+    printf("Multiplicacion de matrices resultado erroneo\n");
   }
 
- free(matrices);
- free(res);
- return(0);
+  free(matrices);
+  free(res);
+  return(0);
 }
-
-
-
-/*****************************************************************/
-
-
-
