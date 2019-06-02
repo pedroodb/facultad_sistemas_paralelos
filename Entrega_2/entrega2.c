@@ -7,7 +7,7 @@ int cantComb(int cantElems, int tomadosDe, int suma, int* lista){
 	for(int i = 0; i < tomadosDe; i++){
 		comb[i] = i;
 	}
-	while(comb[0] <= ((cantElems-1)-tomadosDe)){
+	while(comb[0] <= (cantElems-tomadosDe)){
 
 		//Sumar si da el num buscado
 		int acum = 0;		
@@ -24,7 +24,7 @@ int cantComb(int cantElems, int tomadosDe, int suma, int* lista){
 		comb[tomadosDe-1]++;
 		int indexOver = tomadosDe-1;
 		int over = 0;
-		while (indexOver > 0 && (comb[indexOver] > ((cantElems-1)-(tomadosDe-(indexOver+1))))){
+		while (indexOver > 0 && (comb[indexOver] > (cantElems-tomadosDe+indexOver))){
 			indexOver--;
 			comb[indexOver]++;
 			over = 1;
