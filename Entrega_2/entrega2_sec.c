@@ -1,5 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+
+double dwalltime(){
+  double sec;
+  struct timeval tv;
+  gettimeofday(&tv,NULL);
+  sec = tv.tv_sec + tv.tv_usec/1000000.0;
+  return sec;
+}
 
 int cantComb(int cantElems, int tomadosDe, int suma, int* lista){
 	int cantSuma = 0;
@@ -16,8 +25,6 @@ int cantComb(int cantElems, int tomadosDe, int suma, int* lista){
 		}
 		if(acum == suma){
 			cantSuma++;
-			for(int i=0; i < tomadosDe; i++){
-			}
 		}
 		
 		//Pasar a la siguiente combinacion
@@ -46,16 +53,18 @@ int main(int argc, char* argv[]){
 	}
 
 	int N = atoi(argv[1]);
-	int n = atoi(argv[2]);
-	int v = atoi(argv[3]);	
+	int tomadosDe = atoi(argv[2]);
+	int suma = atoi(argv[3]);	
 
 	int *lista = (int*) malloc(sizeof(int)*N);
+
 	for(int i = 0; i < N; i++){
 		lista[i] = i+1;
 	}
 
-	int c = cantComb(N,n,v,lista);
-	printf("Resultado: %d\n",c);
+	double timetick = dwalltime();
+	int cant = cantComb(N,tomadosDe,suma,lista);
+	printf("Resultado: %d\nTiempo: %f\n", cant,dwalltime()-timetick);
 
 	free(lista);
 }
