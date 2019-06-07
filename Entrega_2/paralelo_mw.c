@@ -1,8 +1,18 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <sys/time.h>
 #define MASTER 0
 
+
+double dwalltime(){
+  double sec;
+  struct timeval tv;
+  gettimeofday(&tv,NULL);
+  sec = tv.tv_sec + tv.tv_usec/1000000.0;
+  return sec;
+}
 
 //Recibe un indice y solo hara las combinaciones que comiencen con ese indice
 int buscarEnLista(int index, int cantElems, int tomadosDe, int suma, int* lista){
@@ -69,6 +79,9 @@ int main(int argc, char *argv[])
             lista[i] = i+1;
         }
     }
+
+    double timetick = dwalltime();
+
     MPI_Bcast(lista, N, MPI_INT, MASTER, MPI_COMM_WORLD);
 
     //División de trabajo entre master y slaves.
@@ -86,19 +99,22 @@ int main(int argc, char *argv[])
         }
     }else{
         int indice;
+        double tiempo = 0;
         MPI_Send(&id, 1, MPI_INT, MASTER, 0, MPI_COMM_WORLD);
         MPI_Recv(&indice, 1, MPI_INT, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         while(status.MPI_TAG == 0){
             elementos += buscarEnLista(indice, N, n, v, lista);
+            tiempo += (dwalltime()-timetick);
+            timetick = dwalltime();
             MPI_Send(&id, 1, MPI_INT, MASTER, 0, MPI_COMM_WORLD);
             MPI_Recv(&indice, 1, MPI_INT, MASTER, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
         }
+        printf("id: %d -- Tiempo: %f\n",id ,tiempo);
     }
-    printf("P%d\n",id);
     int resultados;
     MPI_Reduce(&elementos, &resultados, 1, MPI_INT, MPI_SUM, MASTER, MPI_COMM_WORLD);
     if(id == MASTER){
-        printf("Soy el master en total hubo %d elementos\n", resultados);
+        printf("Resultado: %d\nTiempo: %f\n", resultados,dwalltime()-timetick);
     }
 
     MPI_Finalize();
