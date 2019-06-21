@@ -35,12 +35,10 @@ int main(int argc,char*argv[]){
     matrices[i]=1;
   }
 
-  double res=0;
-
   timetick = dwalltime();
 
-  //Realiza la busqueda del maximo, minimo y promedio y va acumulando la sumatoria en res
   for(i=0;i<M;i++){
+    //Realiza la busqueda del maximo, minimo y promedio y va acumulando la sumatoria en res
     int begin = N*N*i;
     int end = N*N*(i+1);
     int max=-1;
@@ -55,16 +53,32 @@ int main(int argc,char*argv[]){
           min=val;
         }
     }
-    res+=(max-min)/(sum/(N*N));
+    double res=(max-min)/(sum/(N*N));
+    //Multiplica la matriz por ese valor
+    for(j=begin;j<end;j++){
+        matrices[j]*=res;
+    }
   }
 
+  //Sumatoria de las matrices guardada en la primer matriz
+  for (i=1;i<M;i++){
+    for(j=0;j<N*N;j++){
+        matrices[j]+=matrices[j+(N*N*i)];
+    }
+  }
+
+  int check = 0;
+  for(i=0;i<N*N;i++){
+      check += matrices[i];
+  }
+
+  if (check==0){
+    printf("Resultado correcto\n");
+  } else {
+    printf("Resultado incorrecto\n");
+  }
+  
   printf("Tiempo en segundos %f \n", dwalltime() - timetick);
-
-  if(res==0){
-    printf("Multiplicacion de matrices resultado correcto\n");
-  }else{
-    printf("Multiplicacion de matrices resultado erroneo\n");
-  }
 
   free(matrices);
   return(0);
