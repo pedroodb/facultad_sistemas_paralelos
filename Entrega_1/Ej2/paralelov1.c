@@ -56,9 +56,10 @@ void* calcularMatrices(void* id) {
 void* sumaPorFilas(void* id) {
   int thread = *((int*)id);
   int filas = N/NUM_THREADS;
-  int primerFila = filas * NUM_THREADS;
+  int cantMatrices = M/NUM_THREADS;
+  int primerFila = filas * NUM_THREADS * N;
   for (int i = 1; i < NUM_THREADS; i++){
-    int matrizActual = N*N*i;
+    int matrizActual = N*N*i*cantMatrices;
     for (int j = 0; j < N*filas; j++){
       matrices[primerFila+j] += matrices[primerFila+j+matrizActual];
     }
