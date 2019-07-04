@@ -43,14 +43,23 @@ void* calcularMatrices(void* id) {
         matrices[j]*=res;
     }
   }
+  
+  int primerMatriz = (cantMatrices*thread)*N*N;
+  //Sumatoria de las matrices guardada en la primer matriz asignada al thread
+  for (int i=(cantMatrices*thread)+1; i<cantMatrices*(thread+1);i++){
+    for(int j=0;j<N*N;j++){
+        matrices[primerMatriz+j]+=matrices[j+(N*N*i)];
+    }
+  }
 }
 
 void* sumaPorFilas(void* id) {
   int thread = *((int*)id);
   int filas = N/NUM_THREADS;
+  int cantMatrices = M/NUM_THREADS;
   int primerFila = filas * NUM_THREADS * N;
-  for (int i = 1; i < M; i++){
-    int matrizActual = N*N*i;
+  for (int i = 1; i < NUM_THREADS; i++){
+    int matrizActual = N*N*i*cantMatrices;
     for (int j = 0; j < N*filas; j++){
       matrices[primerFila+j] += matrices[primerFila+j+matrizActual];
     }
